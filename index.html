@@ -128,14 +128,35 @@
 
       /* Responsive Styles for Mobile */
       @media (max-width: 768px) {
+        body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          font-size: 12px;
+        }
+
+        .footer {
+          position: static; /* remove absolute */
+          margin-top: 20px;
+          font-size: 0.9em;
+          text-align: center;
+          bottom: 1000px;
+        }
+        .me {
+          margin-top: 20px;
+          margin-bottom: 0;
+        }
         h1 {
           font-size: 6vw;
+          padding-bottom: 100;
+          margin-top: 10px;
         }
 
         p {
           font-size: 4vw;
           padding: 0 15px;
           text-align: center;
+          margin-bottom: 1px;
         }
 
         .toggle-btn {
@@ -143,13 +164,9 @@
           font-size: 1em;
           top: 16px;
           right: 16px;
-        }
-
-        body {
-          font-size: 12px;
+          margin-top: -10px;
         }
       }
-
       /*Applies styles only if screen width is 768px or smaller (tablet/mobile).
 
         vw units scale text relative to screen width for better fit.
@@ -184,7 +201,7 @@
         rows="5"
         placeholder="Type your message here..."
         style="
-          width: 100%;
+          width: 90%;
           padding: 10px;
           border-radius: 8px;
           border: 1px solid #ccc;
