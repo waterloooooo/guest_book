@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,29 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
+});
+
+const transporter = nodemailer.createTransport({
+  service: "gmail", // or your provider
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+const mailOptions = {
+  from: process.env.EMAIL_USER,
+  to: "ryan20020719@gmail.com",
+  subject: "New Message Received",
+  text: `New message: ${message}`,
+};
+
+transporter.sendMail(mailOptions, (err, info) => {
+  if (err) {
+    console.error("Email error:", err);
+  } else {
+    console.log("Email sent:", info.response);
+  }
 });
 
 db.connect((err) => {
