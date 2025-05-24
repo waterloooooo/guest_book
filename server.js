@@ -22,9 +22,26 @@ const db = mysql.createConnection({
 db.connect((err) => {
   if (err) {
     console.error("MySQL connection error:", err);
-  } else {
-    console.log("Connected to MySQL");
+    return;
   }
+  console.log("Connected to MySQL");
+
+  // Create the table if it doesn't exist
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      content TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  db.query(createTableQuery, (err, result) => {
+    if (err) {
+      console.error("Error creating messages table:", err);
+    } else {
+      console.log("Messages table ensured.");
+    }
+  });
 });
 
 // POST endpoint to save message
