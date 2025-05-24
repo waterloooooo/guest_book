@@ -20,29 +20,6 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT,
 });
 
-const transporter = nodemailer.createTransport({
-  service: "gmail", // or your provider
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-const mailOptions = {
-  from: process.env.EMAIL_USER,
-  to: "ryan20020719@gmail.com",
-  subject: "New Message Received",
-  text: `New message: ${message}`,
-};
-
-transporter.sendMail(mailOptions, (err, info) => {
-  if (err) {
-    console.error("Email error:", err);
-  } else {
-    console.log("Email sent:", info.response);
-  }
-});
-
 db.connect((err) => {
   if (err) {
     console.error("MySQL connection error:", err);
@@ -68,7 +45,16 @@ db.connect((err) => {
   });
 });
 
-// POST endpoint to save message
+// Setup Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail", // or your provider
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// POST endpoint to save message and send email
 app.post("/api/messages", (req, res) => {
   const { message } = req.body;
   if (!message) return res.status(400).json({ error: "Message is required" });
@@ -77,10 +63,26 @@ app.post("/api/messages", (req, res) => {
   db.query(query, [message], (err, results) => {
     if (err) {
       console.error("Error inserting message:", err);
-      res.status(500).json({ error: "Database error" });
-    } else {
-      res.status(201).json({ success: true, id: results.insertId });
+      return res.status(500).json({ error: "Database error" });
     }
+
+    // Send email after successful insert
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: "ryan20020719@gmail.com",
+      subject: "New Message Received",
+      text: `New message: ${message}`,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Email error:", err);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+
+    res.status(201).json({ success: true, id: results.insertId });
   });
 });
 
